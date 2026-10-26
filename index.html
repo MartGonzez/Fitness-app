@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitHome - Ejercicios en Casa & Nutrición</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        },
+                        accent: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Estilos Externos -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-between pb-16 md:pb-0 transition-colors duration-200">
+
+    <!-- Header / Navbar Top -->
+    <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('calculator')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-accent-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+                        <i class="fa-solid fa-bolt text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-black bg-gradient-to-r from-brand-500 to-accent-500 bg-clip-text text-transparent">FitHome</span>
+                        <span class="block text-[10px] text-slate-500 dark:text-slate-400 font-bold tracking-widest uppercase">Entrenamiento & Nutrición</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav Tabs -->
+                <nav class="hidden md:flex space-x-1">
+                    <button onclick="switchTab('calculator')" id="nav-btn-calculator" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-calculator"></i> Calculadora & Perfil
+                    </button>
+                    <button onclick="switchTab('workouts')" id="nav-btn-workouts" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-dumbbell"></i> Rutinas & Ejercicios
+                    </button>
+                    <button onclick="switchTab('diet')" id="nav-btn-diet" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-utensils"></i> Dieta & Comidas
+                    </button>
+                    <button onclick="switchTab('progress')" id="nav-btn-progress" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line"></i> Progreso
+                    </button>
+                </nav>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Cambiar tema">
+                        <i id="theme-icon" class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Onboarding Banner Notification -->
+    <div id="onboarding-banner" class="bg-gradient-to-r from-brand-600 to-accent-600 text-white px-4 py-3 shadow-md hidden">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-semibold">
+            <span class="flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-base"></i>
+                ¡Bienvenido a FitHome! Completa tus datos para calcular tus calorías y generar tu plan de entrenamiento personalizado en casa.
+            </span>
+            <button onclick="document.getElementById('onboarding-banner').classList.add('hidden')" class="px-2 py-1 bg-white/20 hover:bg-white/30 rounded text-[11px] font-bold">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+        <!-- TAB 1: CALCULADORA Y PERFIL (ONBOARDING) -->
+        <section id="tab-calculator" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Form Layer -->
+                <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <span class="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-md bg-brand-500/10 text-brand-500 mb-1 inline-block">Paso 1: Tu Perfil</span>
+                        <h2 class="text-xl font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+                            <i class="fa-solid fa-sliders text-brand-500"></i> Datos Antropométricos
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Calculamos tu gasto metabólico basal (Mifflin-St Jeor) y ajustamos tu rutina semanal.</p>
+                    </div>
+
+                    <form id="calc-form" onsubmit="calculateMacros(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Sexo</label>
+                                <select id="gender" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                    <option value="male">Hombre</option>
+                                    <option value="female">Mujer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Edad (años)</label>
+                                <input type="number" id="age" value="25" min="15" max="90" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Peso (kg)</label>
+                                <input type="number" step="0.5" id="weight" value="70" min="30" max="250" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Altura (cm)</label>
+                                <input type="number" id="height" value="175" min="120" max="220" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nivel de Actividad</label>
+                            <select id="activity" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="1.2">Sedentario (Poco o nada de ejercicio)</option>
+                                <option value="1.375">Ligero (1-3 días/semana)</option>
+                                <option value="1.55" selected>Moderado (3-5 días/semana)</option>
+                                <option value="1.725">Fuerte (6-7 días/semana)</option>
+                                <option value="1.9">Muy Fuerte (Atleta o trabajo físico pesado)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Objetivo Fitness</label>
+                            <select id="goal" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="lose">Perder Grasa (-20% calorías)</option>
+                                <option value="maintain" selected>Mantener Peso Actual</option>
+                                <option value="gain">Ganar Masa Muscular (+15% calorías)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Días Disponibles para Entrenar</label>
+                            <select id="user-plan-days" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="3">3 días por semana</option>
+                                <option value="4" selected>4 días por semana (Recomendado)</option>
+                                <option value="5">5 días por semana</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-brand-500 to-accent-500 hover:from-brand-600 hover:to-accent-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Guardar & Generar Mi Plan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Results Dashboard Layer -->
+                <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold mb-4 text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-accent-500"></i> Tu Meta Calórica y Macronutrientes
+                        </h2>
+
+                        <!-- Total Calories Banner -->
+                        <div class="bg-gradient-to-r from-brand-500/10 to-accent-500/10 rounded-2xl p-6 border border-brand-500/20 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div>
+                                <span class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Calorías Diarias Objetivos</span>
+                                <div class="text-4xl font-black text-slate-900 dark:text-white mt-1">
+                                    <span id="res-calories">2,200</span> <span class="text-lg font-normal text-brand-500">kcal/día</span>
+                                </div>
+                                <p id="res-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Calorías estimadas para mantener tu peso corporal actual.</p>
+                            </div>
+                            <div class="text-center sm:text-right">
+                                <span class="text-xs font-semibold text-slate-500 uppercase">Gasto Total (TDEE)</span>
+                                <div id="res-tdee" class="text-lg font-bold text-slate-700 dark:text-slate-300">2,200 kcal</div>
+                            </div>
+                        </div>
+
+                        <!-- Macros breakdown grid -->
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
+                                <div class="w-3 h-3 rounded-full bg-red-500 mx-auto mb-1"></div>
+                                <span class="text-xs font-medium text-slate-500">Proteínas</span>
+                                <div class="text-xl font-bold text-slate-800 dark:text-slate-100" id="res-protein">165g</div>
+                                <span class="text-[10px] text-slate-400" id="res-protein-cal">660 kcal</span>
+                            </div>
+
+                            <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
+                                <div class="w-3 h-3 rounded-full bg-amber-500 mx-auto mb-1"></div>
+                                <span class="text-xs font-medium text-slate-500">Carbohidratos</span>
+                                <div class="text-xl font-bold text-slate-800 dark:text-slate-100" id="res-carbs">247g</div>
+                                <span class="text-[10px] text-slate-400" id="res-carbs-cal">990 kcal</span>
+                            </div>
+
+                            <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
+                                <div class="w-3 h-3 rounded-full bg-blue-500 mx-auto mb-1"></div>
+                                <span class="text-xs font-medium text-slate-500">Grasas</span>
+                                <div class="text-xl font-bold text-slate-800 dark:text-slate-100" id="res-fats">61g</div>
+                                <span class="text-[10px] text-slate-400" id="res-fats-cal">550 kcal</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="applyCalculatedGoalsAndGoToWorkouts()" class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-dumbbell"></i> Ir a Mi Plan de Rutinas Semanal <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: EJERCICIOS Y GENERADOR DE RUTINA -->
+        <section id="tab-workouts" class="tab-content hidden space-y-6">
+
+            <!-- Sub-navigation: Generador vs Banco de Ejercicios -->
+            <div class="flex border-b border-slate-200 dark:border-slate-800 gap-4 text-sm font-bold">
+                <button id="subtab-btn-generator" onclick="switchWorkoutSubtab('generator')" class="pb-3 border-b-2 border-brand-500 text-brand-500 flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-week"></i> Mi Plan Semanal
+                </button>
+                <button id="subtab-btn-bank" onclick="switchWorkoutSubtab('bank')" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-dumbbell"></i> Reproductor & Ejercicios
+                </button>
+            </div>
+
+            <!-- SUB-TAB: GENERADOR DE PLAN SEMANAL -->
+            <div id="subtab-generator" class="space-y-6">
+                <!-- Routine Status Header -->
+                <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-400 bg-brand-500/10 px-2.5 py-0.5 rounded border border-brand-500/20">Configurado para ti</span>
+                        <h2 class="text-2xl font-black flex items-center gap-2 text-white">
+                            <i class="fa-solid fa-calendar-check text-brand-400"></i> Plan Semanal Recomendado
+                        </h2>
+                        <p class="text-xs text-slate-300 max-w-xl">Presiona el botón de reproducción en el día de hoy para ejecutar ÚNICAMENTE la lista de ejercicios sugeridos en modo interactivo.</p>
+                    </div>
+                    
+                    <button onclick="switchTab('calculator')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center gap-2">
+                        <i class="fa-solid fa-gear"></i> Modificar Días / Perfil
+                    </button>
+                </div>
+
+                <!-- Weekly Plan Display Grid -->
+                <div id="weekly-plan-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dinámicamente poblado con el plan semanal generado -->
+                </div>
+            </div>
+
+            <!-- SUB-TAB: MODO ENTRENAMIENTO Y BANCO DE EJERCICIOS -->
+            <div id="subtab-bank" class="hidden space-y-6">
+                
+                <!-- Main Workouts Grid & Timer Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    
+                    <!-- INTERACTIVE WORKOUT PLAYER / REPETITION INTERACTION -->
+                    <div class="lg:col-span-6 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-lg space-y-5 sticky top-20 h-fit">
+                        
+                        <!-- Header Status -->
+                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <div>
+                                <span id="player-session-title" class="text-xs font-bold text-brand-500 uppercase tracking-wider block">Sesión Interactiva</span>
+                                <h3 id="player-exercise-title" class="text-xl font-extrabold text-slate-900 dark:text-white mt-0.5">Selecciona un Ejercicio</h3>
+                            </div>
+                            <span id="player-status-badge" class="text-xs px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold">Listo</span>
+                        </div>
+
+                        <!-- Main Interactive Display (Repeticiones vs Tiempo) -->
+                        <div id="player-main-box" class="bg-slate-900 text-white rounded-2xl p-6 text-center space-y-4 border border-slate-800 relative overflow-hidden min-h-[220px] flex flex-col items-center justify-center">
+                            
+                            <!-- Mode 1: REPETICIONES -->
+                            <div id="display-mode-reps" class="space-y-3 w-full">
+                                <span class="text-xs font-bold text-brand-400 uppercase tracking-widest block" id="rep-set-indicator">Serie 1 de 3</span>
+                                <div class="text-4xl sm:text-5xl font-black text-white font-mono my-1" id="rep-count-target">12 REPETICIONES</div>
+                                <p class="text-xs text-slate-300 max-w-xs mx-auto" id="rep-instruction">Haz las repeticiones manteniendo la forma. Al terminar la serie, presiona el botón inferior para descansar.</p>
+                                
+                                <button onclick="completeCurrentSet()" id="btn-complete-set" class="mt-3 w-full bg-gradient-to-r from-brand-500 to-emerald-600 hover:from-brand-600 hover:to-emerald-700 text-white font-black py-4 rounded-xl shadow-lg shadow-brand-500/30 transition text-base sm:text-lg flex items-center justify-center gap-3 animate-pulse-glow">
+                                    <i class="fa-solid fa-circle-check text-xl"></i> ¡LISTO! / TERMINÉ SERIE
+                                </button>
+                            </div>
+
+                            <!-- Mode 2: TIEMPO (Descanso o Ejercicio por Tiempo) -->
+                            <div id="display-mode-time" class="hidden space-y-3 w-full">
+                                <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block" id="timer-phase-title">TIEMPO DE TRABAJO</span>
+                                <div id="timer-display-digits" class="text-6xl font-black font-mono my-1 text-slate-100">00:45</div>
+                                
+                                <!-- Progress Bar -->
+                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden my-2">
+                                    <div id="timer-progress-bar" class="bg-brand-500 h-full w-full transition-all duration-300"></div>
+                                </div>
+
+                                <div class="flex justify-center gap-2 pt-1">
+                                    <button onclick="pauseTimer()" id="btn-timer-pause" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-slate-200">
+                                        <i class="fa-solid fa-pause"></i> Pausa
+                                    </button>
+                                    <button onclick="skipRestOrTime()" id="btn-timer-skip" class="px-4 py-2 bg-brand-500/20 hover:bg-brand-500/30 text-xs font-bold rounded-lg text-brand-400 border border-brand-500/30">
+                                        Continuar / Saltar <i class="fa-solid fa-forward"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Posture & Muscle Info for Active Exercise -->
+                        <div id="player-active-info" class="space-y-3 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-bold text-slate-700 dark:text-slate-300" id="player-info-reps">3 series x 12 reps</span>
+                                <span class="text-slate-400 font-semibold" id="player-info-level">Principiante</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                                <!-- Image/Illustration Container -->
+                                <div class="relative bg-slate-900 rounded-lg overflow-hidden border border-slate-800 h-28 flex items-center justify-center">
+                                    <img id="player-info-img" src="https://placehold.co/400x220/1e293b/34d399?text=Dibujo+Ejercicio" alt="Ilustración ejercicio" class="w-full h-full object-cover">
+                                </div>
+
+                                <!-- Muscles Worked Tags -->
+                                <div class="space-y-1 text-xs">
+                                    <span class="text-[10px] uppercase font-bold text-slate-400 block">Músculos Involucrados:</span>
+                                    <div id="player-info-muscles" class="flex flex-wrap gap-1">
+                                        <span class="text-[10px] px-2 py-0.5 rounded bg-brand-500/20 text-brand-400 font-bold">Pectoral</span>
+                                        <span class="text-[10px] px-2 py-0.5 rounded bg-slate-700 text-slate-300">Tríceps</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Session Navigation Queue -->
+                        <div id="routine-queue-container" class="hidden space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase">
+                                <span>Secuencia del Día (<span id="queue-count">0/0</span>)</span>
+                                <div class="flex gap-2">
+                                    <button onclick="prevQueueExercise()" class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded hover:text-brand-500"><i class="fa-solid fa-chevron-left"></i> Ant</button>
+                                    <button onclick="nextQueueExercise()" class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded hover:text-brand-500">Sig <i class="fa-solid fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div id="queue-items-list" class="space-y-1.5 max-h-36 overflow-y-auto custom-scrollbar">
+                                <!-- Dynamic sequence list -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- BANCO COMPLETO DE EJERCICIOS Y FILTROS (DERECHA) -->
+                    <div class="lg:col-span-6 space-y-4">
+                        
+                        <!-- Filter Bar -->
+                        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 flex flex-wrap gap-3 justify-between items-center">
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Catálogo de Ejercicios</span>
+                            
+                            <div class="flex gap-2">
+                                <select id="workout-zone" onchange="filterWorkouts()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold outline-none">
+                                    <option value="all">Todas las Zonas</option>
+                                    <option value="upper">Tren Superior</option>
+                                    <option value="lower">Tren Inferior</option>
+                                    <option value="hiit">HIIT / Cardio</option>
+                                    <option value="fullbody">Full Body</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Cards list -->
+                        <div class="space-y-4" id="workout-list">
+                            <!-- Dynamic Cards -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 3: DIETA Y RECETAS -->
+        <section id="tab-diet" class="tab-content hidden space-y-6">
+            <!-- Meal Daily Overview -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Plan Diario de Alimentación</h2>
+                        <p class="text-xs text-slate-500">Registra tus comidas y mantén tus calorías bajo control</p>
+                    </div>
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <div class="bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-xl text-center border border-slate-200 dark:border-slate-700 flex-1 md:flex-none">
+                            <div class="text-[10px] text-slate-500 uppercase font-semibold">Calorías Consumidas</div>
+                            <div class="text-lg font-extrabold text-brand-500" id="diet-logged-cal">0 / 2200 kcal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Meals Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Desayuno -->
+                    <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+                            <span class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                <i class="fa-solid fa-mug-saucer text-amber-500"></i> Desayuno
+                            </span>
+                            <span class="text-xs font-semibold text-slate-400" id="cal-desayuno">0 kcal</span>
+                        </div>
+                        <ul id="list-desayuno" class="space-y-2 text-xs text-slate-600 dark:text-slate-300 min-h-[60px]">
+                        </ul>
+                        <button onclick="openAddMealModal('desayuno')" class="w-full py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-brand-500 hover:text-white text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Agregar
+                        </button>
+                    </div>
+
+                    <!-- Almuerzo -->
+                    <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+                            <span class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                <i class="fa-solid fa-bowl-rice text-brand-500"></i> Almuerzo
+                            </span>
+                            <span class="text-xs font-semibold text-slate-400" id="cal-almuerzo">0 kcal</span>
+                        </div>
+                        <ul id="list-almuerzo" class="space-y-2 text-xs text-slate-600 dark:text-slate-300 min-h-[60px]">
+                        </ul>
+                        <button onclick="openAddMealModal('almuerzo')" class="w-full py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-brand-500 hover:text-white text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Agregar
+                        </button>
+                    </div>
+
+                    <!-- Merienda -->
+                    <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+                            <span class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                <i class="fa-solid fa-apple-whole text-red-500"></i> Merienda
+                            </span>
+                            <span class="text-xs font-semibold text-slate-400" id="cal-merienda">0 kcal</span>
+                        </div>
+                        <ul id="list-merienda" class="space-y-2 text-xs text-slate-600 dark:text-slate-300 min-h-[60px]">
+                        </ul>
+                        <button onclick="openAddMealModal('merienda')" class="w-full py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-brand-500 hover:text-white text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Agregar
+                        </button>
+                    </div>
+
+                    <!-- Cena -->
+                    <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+                            <span class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                <i class="fa-solid fa-utensils text-accent-500"></i> Cena
+                            </span>
+                            <span class="text-xs font-semibold text-slate-400" id="cal-cena">0 kcal</span>
+                        </div>
+                        <ul id="list-cena" class="space-y-2 text-xs text-slate-600 dark:text-slate-300 min-h-[60px]">
+                        </ul>
+                        <button onclick="openAddMealModal('cena')" class="w-full py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-brand-500 hover:text-white text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Healthy Recipes Recommendation Bank -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-brand-500"></i> Recetas Sencillas & Recomendadas
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="recipes-grid">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: PROGRESO Y METAS -->
+        <section id="tab-progress" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Water Tracker Widget & Daily Goals -->
+                <div class="lg:col-span-5 space-y-6">
+                    <!-- Water Counter -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center justify-center gap-2 mb-4">
+                            <i class="fa-solid fa-glass-water text-blue-500"></i> Registro de Agua Diaria
+                        </h3>
+                        
+                        <div class="relative w-36 h-36 mx-auto flex items-center justify-center bg-blue-50 dark:bg-slate-800/80 rounded-full border-4 border-blue-500/20">
+                            <div>
+                                <span id="water-count" class="text-3xl font-black text-blue-600 dark:text-blue-400">1.5</span>
+                                <span class="block text-xs text-slate-500 font-semibold">de 2.5 Litros</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-center gap-3 mt-6">
+                            <button onclick="changeWater(-0.25)" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-lg flex items-center justify-center">-</button>
+                            <button onclick="changeWater(0.25)" class="px-4 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-bold text-xs shadow-md shadow-blue-500/20 flex items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> +250ml
+                            </button>
+                            <button onclick="changeWater(0.50)" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 flex items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> +500ml
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Goals Checklist -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-brand-500"></i> Metas de la Semana
+                        </h3>
+                        
+                        <div class="space-y-2 text-sm" id="goals-checklist">
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer">
+                                <input type="checkbox" onchange="saveState()" class="w-4 h-4 rounded text-brand-500 focus:ring-brand-500">
+                                <span>Entrenar los días programados</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer">
+                                <input type="checkbox" onchange="saveState()" class="w-4 h-4 rounded text-brand-500 focus:ring-brand-500">
+                                <span>Cumplir meta de agua (2.5L/día)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer">
+                                <input type="checkbox" onchange="saveState()" class="w-4 h-4 rounded text-brand-500 focus:ring-brand-500">
+                                <span>Respetar el descanso entre series</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weight Tracking Chart & Input -->
+                <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-weight-scale text-accent-500"></i> Evolución de Peso Corporal
+                            </h3>
+                            <p class="text-xs text-slate-500">Registro histórico en el tiempo</p>
+                        </div>
+
+                        <!-- Add Weight Entry Form -->
+                        <form onsubmit="addWeightRecord(event)" class="flex gap-2 w-full sm:w-auto">
+                            <input type="number" step="0.1" id="new-weight-val" placeholder="70.5 kg" required class="w-28 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs outline-none">
+                            <button type="submit" class="bg-accent-500 hover:bg-accent-600 text-white text-xs font-bold px-4 py-1.5 rounded-xl transition">
+                                Guardar
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Canvas Chart -->
+                    <div class="h-64 w-full">
+                        <canvas id="weightChart"></canvas>
+                    </div>
+
+                    <!-- History Table -->
+                    <div class="border-t border-slate-100 dark:border-slate-800 pt-4">
+                        <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2">Historial de Registros</h4>
+                        <div class="max-h-36 overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-slate-100 dark:border-slate-800">
+                                        <th class="pb-2">Fecha</th>
+                                        <th class="pb-2">Peso</th>
+                                        <th class="pb-2 text-right">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="weight-history-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- CONGRATULATIONS / WORKOUT COMPLETE MODAL -->
+    <div id="congrats-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 w-full max-w-lg shadow-2xl space-y-6 text-center relative overflow-hidden animate-pulse-glow">
+            <!-- Confetti & Trophy Banner -->
+            <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-500 flex items-center justify-center text-white text-4xl mx-auto shadow-lg shadow-amber-500/30">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+
+            <div class="space-y-2">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-brand-500">¡Entrenamiento Completado!</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">¡Gran trabajo hoy! 🎉</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Has cumplido con éxito los ejercicios de la sesión.</p>
+            </div>
+
+            <!-- Workout Summary Stats -->
+            <div class="grid grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Ejercicios</span>
+                    <span id="summary-ex-count" class="text-lg font-black text-brand-500">3</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Tiempo Est.</span>
+                    <span id="summary-time" class="text-lg font-black text-slate-800 dark:text-slate-100">~25 min</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Calorías</span>
+                    <span id="summary-cals" class="text-lg font-black text-amber-500">~180 kcal</span>
+                </div>
+            </div>
+
+            <!-- Hydration Reminder Widget -->
+            <div class="bg-blue-500/10 border border-blue-500/30 p-4 rounded-2xl text-left space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-droplet"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-extrabold text-blue-600 dark:text-blue-400 uppercase">Recordatorio de Hidratación</h4>
+                        <p class="text-[11px] text-slate-600 dark:text-slate-300">Es el momento ideal para beber agua y recuperar fluidos.</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-1">
+                    <button onclick="logWaterFromCongrats(0.25)" class="flex-1 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-plus"></i> Tomar +250 ml
+                    </button>
+                    <button onclick="logWaterFromCongrats(0.50)" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-plus"></i> Tomar +500 ml
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pre-Progress Weight Entry Form -->
+            <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 text-left space-y-2">
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                    <i class="fa-solid fa-weight-scale text-accent-500 mr-1"></i> Registra tu Peso Actual antes de ver tu progreso:
+                </label>
+                <div class="flex gap-2">
+                    <input type="number" step="0.1" id="congrats-weight-input" placeholder="Ej: 70.5 kg" class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none">
+                    <button onclick="saveWeightFromCongrats()" class="px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white font-bold rounded-xl text-xs transition">
+                        Guardar Peso
+                    </button>
+                </div>
+            </div>
+
+            <!-- Final Direct Action Button -->
+            <button onclick="finishCongratsAndGoToProgress()" class="w-full py-3.5 bg-gradient-to-r from-brand-500 to-accent-500 hover:from-brand-600 hover:to-accent-600 text-white font-black text-sm rounded-xl shadow-lg shadow-brand-500/20 transition flex items-center justify-center gap-2">
+                Ver Mi Gráfico de Progreso <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Mobile Navigation Bar -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 z-50 px-6 py-2">
+        <div class="flex justify-around items-center">
+            <button onclick="switchTab('calculator')" id="mobile-nav-calculator" class="mobile-nav-btn text-brand-500 flex flex-col items-center gap-1 text-[10px] font-bold">
+                <i class="fa-solid fa-calculator text-lg"></i> Calculadora
+            </button>
+            <button onclick="switchTab('workouts')" id="mobile-nav-workouts" class="mobile-nav-btn text-slate-400 flex flex-col items-center gap-1 text-[10px] font-medium">
+                <i class="fa-solid fa-dumbbell text-lg"></i> Rutinas
+            </button>
+            <button onclick="switchTab('diet')" id="mobile-nav-diet" class="mobile-nav-btn text-slate-400 flex flex-col items-center gap-1 text-[10px] font-medium">
+                <i class="fa-solid fa-utensils text-lg"></i> Comidas
+            </button>
+            <button onclick="switchTab('progress')" id="mobile-nav-progress" class="mobile-nav-btn text-slate-400 flex flex-col items-center gap-1 text-[10px] font-medium">
+                <i class="fa-solid fa-chart-line text-lg"></i> Progreso
+            </button>
+        </div>
+    </nav>
+
+    <!-- Add Meal Modal -->
+    <div id="meal-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center justify-between">
+                <span>Agregar Alimento</span>
+                <button onclick="closeMealModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </h3>
+
+            <form onsubmit="saveCustomMeal(event)" class="space-y-4">
+                <input type="hidden" id="modal-meal-type">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nombre del alimento / platillo</label>
+                    <input type="text" id="modal-meal-name" placeholder="Ej: Avena con plátano" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Calorías (kcal)</label>
+                        <input type="number" id="modal-meal-cal" placeholder="350" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Proteínas (g)</label>
+                        <input type="number" id="modal-meal-prot" placeholder="15" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm outline-none">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-2.5 rounded-xl transition">
+                    Guardar Comida
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Lógica -->
+    <script src="app.js"></script>
+</body>
+</html>

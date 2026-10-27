@@ -1,0 +1,11 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "FitnessHome",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "FitnessHome",
+  "start_url": "https://martgonzez.github.io/Fitness-app/",
+  "theme_color": "#ffffff"
+}

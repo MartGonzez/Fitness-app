@@ -1,11 +1,18 @@
 {
-  "background_color": "#ffffff",
-  "dir": "ltr",
+  "name": "FitHome - Ejercicios y Dieta",
+  "short_name": "FitHome",
+  "start_url": "/Fitness-app/",
+  "scope": "/Fitness-app/",
   "display": "standalone",
-  "name": "FitnessHome",
-  "orientation": "any",
-  "scope": "/",
-  "short_name": "FitnessHome",
-  "start_url": "https://martgonzez.github.io/Fitness-app/",
-  "theme_color": "#ffffff"
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "img/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }

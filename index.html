@@ -37,6 +37,11 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Estilos Externos -->
     <link rel="stylesheet" href="styles.css">
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <link rel="apple-touch-icon" href="img/flexiones.png">
+    
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-between pb-16 md:pb-0 transition-colors duration-200">
 
@@ -698,5 +703,15 @@
 
     <!-- JavaScript Lógica -->
     <script src="app.js"></script>
+    <!-- Registro de Service Worker para PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/Fitness-app/sw.js')
+                    .then(reg => console.log('Service Worker registrado con éxito:', reg))
+                    .catch(err => console.log('Error al registrar Service Worker:', err));
+            });
+        }
+    </script>
 </body>
 </html>

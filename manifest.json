@@ -1,18 +1,35 @@
 {
-  "name": "FitHome - Ejercicios y Dieta",
+  "name": "FitHome - Ejercicios en Casa y Dieta",
   "short_name": "FitHome",
+  "description": "Tu entrenador personal y nutricionista en casa con rutinas interactivas y calculadora de macros.",
   "start_url": "/Fitness-app/",
   "scope": "/Fitness-app/",
   "display": "standalone",
-  "background_color": "#0f172a",
+  "background_color": "#090d16",
   "theme_color": "#10b981",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "categories": ["health", "fitness", "lifestyle", "sports"],
   "icons": [
+    {
+      "src": "img/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "img/icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "img/screenshot1.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Pantalla principal de FitHome"
     }
   ]
 }

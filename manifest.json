@@ -25,21 +25,21 @@
   ],
   "screenshots": [
     {
-      "src": "img/screen1.png",
+      "src": "img/screenshot1.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Calculadora de Macros y Calorías"
     },
     {
-      "src": "img/screen2.png",
+      "src": "img/screenshot2.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Modo Entrenador Interactivo"
     },
     {
-      "src": "img/screen3.png",
+      "src": "img/screenshot3.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "narrow",

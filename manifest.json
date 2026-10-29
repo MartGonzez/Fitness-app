@@ -26,21 +26,21 @@
   "screenshots": [
     {
       "src": "img/screenshot1.png",
-      "sizes": "1920x1080",
+      "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Calculadora de Macros y Calorías"
     },
     {
       "src": "img/screenshot2.png",
-      "sizes": "1920x1080",
+      "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Modo Entrenador Interactivo"
     },
     {
       "src": "img/screenshot3.png",
-      "sizes": "1920x1080",
+      "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Progreso de Peso y Agua"

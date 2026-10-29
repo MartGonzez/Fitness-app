@@ -25,11 +25,25 @@
   ],
   "screenshots": [
     {
-      "src": "img/screenshot1.png",
-      "sizes": "540x720",
+      "src": "img/screen1.png",
+      "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Pantalla principal de FitHome"
+      "label": "Calculadora de Macros y Calorías"
+    },
+    {
+      "src": "img/screen2.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Modo Entrenador Interactivo"
+    },
+    {
+      "src": "img/screen3.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Progreso de Peso y Agua"
     }
   ]
 }
